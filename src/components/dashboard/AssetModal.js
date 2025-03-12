@@ -1,65 +1,46 @@
 import React from "react";
-import {
-  Modal,
-  Box,
-  Typography,
-  Button,
-  TextField,
-  MenuItem,
-} from "@mui/material";
+import { Modal, Box, Typography, Button, TextField, MenuItem } from "@mui/material";
 import { Close } from "@mui/icons-material";
-import styles from "./TransactionModal.module.css";
+import styles from "../transactions/TransactionModal.module.css";
+import axiosInstance from "../../utils/axiosConfig";
 
-const TRANSACTION_TYPES = {
-  INCOME: "income",
-  EXPENSE: "expense",
-};
+const ASSET_CATEGORIES = [
+  "Bank Balance",
+  "Investments",
+  "Property",
+  "Vehicles",
+  "Other Assets"
+];
 
-const CATEGORIES = {
-  [TRANSACTION_TYPES.INCOME]: [
-    "Salary",
-    "Bonus",
-    "Rental",
-    "Freelance",
-    "Investment",
-    "Other",
-  ],
-  [TRANSACTION_TYPES.EXPENSE]: [
-    "Rent",
-    "Food",
-    "Utilities",
-    "Transport",
-    "Entertainment",
-    "Healthcare",
-    "Shopping",
-    "Other",
-  ],
-};
-
-const TransactionModal = ({ isOpen, onClose, onSubmit }) => {
-  const [type, setType] = React.useState(TRANSACTION_TYPES.EXPENSE);
-  const [amount, setAmount] = React.useState("");
+const AssetModal = ({ isOpen, onClose, onSubmit }) => {
   const [category, setCategory] = React.useState("");
+  const [amount, setAmount] = React.useState("");
   const [description, setDescription] = React.useState("");
-  const [date, setDate] = React.useState(
-    new Date().toISOString().split("T")[0]
-  );
+  const [date, setDate] = React.useState(new Date().toISOString().split("T")[0]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit({
-      transaction_type: type,
-      transaction_category: category,
-      amount: parseInt(amount, 10),
-      description,
-      date,
-    });
-    // Reset form
-    setAmount("");
-    setCategory("");
-    setDescription("");
-    setDate(new Date().toISOString().split("T")[0]);
-    onClose();
+    try {
+      const { data } = await axiosInstance.post("/assets-liabilities/", {
+        type: "Asset",
+        category,
+        amount: parseInt(amount, 10),
+        description,
+        date,
+      });
+
+      onSubmit(data);
+      
+      // Reset form
+      setAmount("");
+      setCategory("");
+      setDescription("");
+      setDate(new Date().toISOString().split("T")[0]);
+      onClose();
+    } catch (error) {
+      console.error("Error adding asset:", error);
+      alert("Failed to add asset. Please try again.");
+    }
   };
 
   if (!isOpen) return null;
@@ -87,7 +68,7 @@ const TransactionModal = ({ isOpen, onClose, onSubmit }) => {
           }}
         >
           <Typography sx={{ fontSize: "22px", fontWeight: "600" }}>
-            Add Transaction
+            Add Asset
           </Typography>
           <Button
             onClick={onClose}
@@ -106,30 +87,7 @@ const TransactionModal = ({ isOpen, onClose, onSubmit }) => {
         <form onSubmit={handleSubmit} className={styles.formGroup}>
           <TextField
             select
-            label="Type"
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-            fullWidth
-            margin="normal"
-          >
-            <MenuItem value={TRANSACTION_TYPES.EXPENSE}>Expense</MenuItem>
-            <MenuItem value={TRANSACTION_TYPES.INCOME}>Income</MenuItem>
-          </TextField>
-
-          <TextField
-            type="number"
-            label="Amount"
-            value={amount}
-            onChange={(e) => e.target.value >= 1 && setAmount(e.target.value)}
-            fullWidth
-            margin="normal"
-            required
-            // inputProps={{ min: 0, step: 1 }}
-          />
-
-          <TextField
-            select
-            label="Category"
+            label="Asset Category"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             fullWidth
@@ -137,12 +95,22 @@ const TransactionModal = ({ isOpen, onClose, onSubmit }) => {
             required
           >
             <MenuItem value="">Select a category</MenuItem>
-            {CATEGORIES[type].map((cat) => (
+            {ASSET_CATEGORIES.map((cat) => (
               <MenuItem key={cat} value={cat}>
                 {cat}
               </MenuItem>
             ))}
           </TextField>
+
+          <TextField
+            type="number"
+            label="Amount"
+            value={amount}
+            onChange={(e) => e.target.value >= 0 && setAmount(e.target.value)}
+            fullWidth
+            margin="normal"
+            required
+          />
 
           <TextField
             label="Description"
@@ -161,7 +129,6 @@ const TransactionModal = ({ isOpen, onClose, onSubmit }) => {
             fullWidth
             margin="normal"
             required
-            // InputLabelProps={{ shrink: true }}
           />
 
           <Button
@@ -170,7 +137,7 @@ const TransactionModal = ({ isOpen, onClose, onSubmit }) => {
             fullWidth
             sx={{ mt: 2, textTransform: "none" }}
           >
-            Add Transaction
+            Add Asset
           </Button>
         </form>
       </Box>
@@ -178,4 +145,4 @@ const TransactionModal = ({ isOpen, onClose, onSubmit }) => {
   );
 };
 
-export default TransactionModal;
+export default AssetModal;

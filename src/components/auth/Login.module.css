@@ -15,32 +15,19 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
-.formGroup {
+/* .formGroup {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-}
+} */
 
 .formGroup label {
   color: #1e40af;
   font-size: 0.9rem;
   font-weight: 500;
-}
-
-.input {
-  padding: 0.8rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-  transition: border-color 0.3s;
-}
-
-.input:focus {
-  outline: none;
-  border-color: #007bff;
 }
 
 .button {
@@ -78,7 +65,7 @@
   display: flex;
   align-items: center;
   text-align: center;
-  margin: 1rem 0;
+  /* margin: 1rem 0; */
   color: #6b7280;
 }
 
@@ -95,12 +82,4 @@
 
 .divider::after {
   margin-left: 1rem;
-}
-
-.googleButton {
-  background-color: #4285f4;
-}
-
-.googleButton:hover {
-  background-color: #357abd;
 }

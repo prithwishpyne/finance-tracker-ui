@@ -4,10 +4,11 @@
 }
 
 .formSection {
-  background-color: var(--background-color);
+  background-color: #ffffff;
   padding: 1.5rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
 }
 
 .form {
@@ -46,11 +47,12 @@
 }
 
 .transactionList {
-  background-color: var(--background-color);
+  background-color: #ffffff;
   color: var(--text-color);
   padding: 1.5rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
   margin-top: 2rem;
 }
 
@@ -63,9 +65,9 @@
   cursor: pointer;
   font-size: 1rem;
   transition: background-color 0.3s;
-  position: absolute;
+  /* position: absolute;
   right: 1rem;
-  top: 1rem;
+  top: 1rem; */
 }
 
 .addButton:hover {
@@ -77,10 +79,11 @@
   grid-template-columns: 1fr 2fr 1fr 1fr 1fr 0.5fr;
   gap: 1rem;
   padding: 1rem;
-  background-color: var(--header-background);
+  background-color: #f8f9fa;
   border-radius: 4px;
   margin-bottom: 1rem;
   font-weight: bold;
+  border: 1px solid var(--border-color);
 }
 
 .transaction {
@@ -88,14 +91,17 @@
   grid-template-columns: 1fr 2fr 1fr 1fr 1fr 0.5fr;
   gap: 1rem;
   padding: 1rem;
-  border-bottom: 1px solid var(--border-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
   align-items: center;
-  background-color: var(--background-color);
+  background-color: #ffffff;
   color: var(--text-color);
+  transition: background-color 0.2s;
 }
 
-.transaction:last-child {
-  border-bottom: none;
+.transaction:hover {
+  background-color: #f8f9fa;
 }
 
 .transaction.income {
@@ -105,8 +111,6 @@
 .transaction.expense {
   border-left: 4px solid #dc3545;
 }
-
-
 
 .transactionDate,
 .transactionDescription,

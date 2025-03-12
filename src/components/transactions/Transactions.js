@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import styles from "./Transactions.module.css";
 import TransactionModal from "./TransactionModal";
+import { Button } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import axiosInstance from "../../utils/axiosConfig";
 
 const TRANSACTION_TYPES = {
   INCOME: "income",
@@ -38,14 +41,7 @@ const Transactions = ({ onTransactionUpdate }) => {
     setIsLoading(true);
     setError("");
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:8000/transactions/", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) throw new Error("Failed to fetch transactions");
-      const data = await response.json();
+      const { data } = await axiosInstance.get("/transactions/");
       setTransactions(data);
       onTransactionUpdate?.(data);
     } catch (err) {
@@ -62,16 +58,7 @@ const Transactions = ({ onTransactionUpdate }) => {
 
   const handleDelete = async (id) => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:8000/transactions/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error("Failed to delete transaction");
-
+      await axiosInstance.delete(`/transactions/${id}`);
       // Refresh transactions after successful deletion
       await fetchTransactions();
     } catch (err) {
@@ -85,20 +72,9 @@ const Transactions = ({ onTransactionUpdate }) => {
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:8000/transactions/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) throw new Error("Failed to create transaction");
-
-      // Refresh transactions after successful creation
+      await axiosInstance.post("/transactions/", formData);
       await fetchTransactions();
+      setIsModalOpen(false);
     } catch (err) {
       setError("Failed to create transaction");
       console.error("Error:", err);
@@ -109,10 +85,6 @@ const Transactions = ({ onTransactionUpdate }) => {
 
   return (
     <div className={styles.container}>
-      <button onClick={() => setIsModalOpen(true)} className={styles.addButton}>
-        Add New Transaction
-      </button>
-
       <TransactionModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -120,7 +92,28 @@ const Transactions = ({ onTransactionUpdate }) => {
       />
 
       <div className={styles.transactionList}>
-        <h2>Recent Transactions</h2>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <h2>Recent Transactions</h2>
+          <Button
+            onClick={() => setIsModalOpen(true)}
+            variant="contained"
+            startIcon={<AddIcon />}
+            sx={{
+              textTransform: "none",
+              backgroundColor: "#007bff",
+              color: "#fff",
+              m: 0,
+            }}
+          >
+            Add New Transaction
+          </Button>
+        </div>
         <div className={styles.transactionHeader}>
           <div className={styles.headerDate}>Date</div>
           <div className={styles.headerDescription}>Description</div>

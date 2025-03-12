@@ -3,13 +3,25 @@ import { Outlet, Navigate, useLocation } from "react-router-dom";
 import { supabase } from "./supabaseClient";
 import { Button, CircularProgress } from "@mui/material";
 import styles from "./App.module.css";
+import LogoutIcon from "@mui/icons-material/Logout";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import ProfileModal from "./components/profile/ProfileModal";
 
-function AppContent() {
+const AppContent = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return localStorage.getItem("token") !== null;
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [userName, setUserName] = useState(
+    localStorage.getItem("userName") || ""
+  );
   const location = useLocation();
+
+  const handleNameUpdate = (newName) => {
+    setUserName(newName);
+    localStorage.setItem("userName", newName);
+  };
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -38,9 +50,12 @@ function AppContent() {
           const tokenData = await response.json();
           localStorage.setItem("token", tokenData.access_token);
           localStorage.setItem("userName", tokenData.name);
+          setUserName(tokenData.name);
           setIsAuthenticated(true);
         } else {
           const token = localStorage.getItem("token");
+          const storedName = localStorage.getItem("userName");
+          setUserName(storedName || "");
           setIsAuthenticated(token !== null);
         }
       } catch (error) {
@@ -87,8 +102,20 @@ function AppContent() {
     <div className={styles.app}>
       {isAuthenticated && (
         <nav className={styles.navbar}>
-          <h1 className={styles.headerText}>Financial Manager</h1>
+          <h1 className={styles.headerText}>FinanceTrack</h1>
           <div className={styles.navbarActions}>
+            <Button
+              onClick={() => setShowProfileModal(true)}
+              sx={{
+                fontSize: "16px",
+                textTransform: "none",
+                color: "#fff",
+                fontWeight: "500",
+              }}
+              startIcon={<AccountCircleIcon />}
+            >
+              Profile
+            </Button>
             <Button
               onClick={async () => {
                 await supabase.auth.signOut();
@@ -96,23 +123,30 @@ function AppContent() {
                 setIsAuthenticated(false);
               }}
               sx={{
+                fontSize: "16px",
                 textTransform: "none",
-                backgroundColor: "#fff",
-                color: "#000",
-                fontWeight: "600",
+                color: "#fff",
+                fontWeight: "500",
               }}
+              startIcon={<LogoutIcon />}
             >
               Logout
             </Button>
           </div>
         </nav>
       )}
+      <ProfileModal
+        isOpen={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
+        userName={userName}
+        onNameChange={handleNameUpdate}
+      />
       <main className={styles.mainContent}>
-        <Outlet context={{ setIsAuthenticated }} />
+        <Outlet context={{ setIsAuthenticated, userName }} />
       </main>
     </div>
   );
-}
+};
 
 const App = () => {
   return <AppContent />;

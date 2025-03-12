@@ -1,9 +1,18 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, CircularProgress, Typography } from "@mui/material";
-import { Google as GoogleIcon } from "@mui/icons-material";
 import styles from "./Login.module.css";
 import { supabase } from "../../supabaseClient";
+import {
+  TextField,
+  Button,
+  CircularProgress,
+  Alert,
+  Typography,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Google as GoogleIcon } from "@mui/icons-material";
 
 const Login = ({ setIsAuthenticated }) => {
   const navigate = useNavigate();
@@ -13,6 +22,7 @@ const Login = ({ setIsAuthenticated }) => {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,8 +79,31 @@ const Login = ({ setIsAuthenticated }) => {
 
       if (error) throw error;
 
-      // The OAuth flow will redirect to the dashboard
-      // The App component will handle the session and authentication state
+      // Get the user data from Supabase
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        // Send user data to our backend
+        const response = await fetch("http://localhost:8000/oauth/google", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: user.email,
+            name: user.user_metadata?.full_name || "",
+          }),
+        });
+
+        if (!response.ok) throw new Error("Failed to sync user data");
+
+        const tokenData = await response.json();
+        localStorage.setItem("token", tokenData.access_token);
+        setIsAuthenticated(true);
+        navigate("/dashboard");
+      }
     } catch (err) {
       setError(err.message);
       setLoading(false);
@@ -80,67 +113,94 @@ const Login = ({ setIsAuthenticated }) => {
   return (
     <div className={styles.loginContainer}>
       <div className={styles.header}>
-        <h2>Sign in to your account</h2>
+        <Typography sx={{ fontSize: "22px", fontWeight: "600" }}>
+          Sign in to your account
+        </Typography>
       </div>
       <form className={styles.form} onSubmit={handleSubmit}>
-        {error && <div className={styles.error}>{error}</div>}
+        {error && (
+          <Alert severity="error" sx={{ mb: 1 }}>
+            {error}
+          </Alert>
+        )}
         <div className={styles.formGroup}>
-          <label htmlFor="username">Email address</label>
-          <input
+          <TextField
+            fullWidth
             id="username"
             name="username"
             type="email"
+            label="Email address"
             required
-            className={styles.input}
-            placeholder="Email address"
             value={formData.username}
             onChange={handleChange}
+            margin="normal"
+            size="small"
+            sx={{ m: 0 }}
+            inputProps={{ style: { fontSize: 15 } }}
           />
         </div>
         <div className={styles.formGroup}>
-          <label htmlFor="password">Password</label>
-          <input
+          <TextField
+            fullWidth
             id="password"
             name="password"
-            type="password"
+            label="Password"
             required
-            className={styles.input}
-            placeholder="Password"
             value={formData.password}
             onChange={handleChange}
+            margin="normal"
+            size="small"
+            sx={{ m: 0 }}
+            type={showPassword ? "text" : "password"}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => setShowPassword(!showPassword)}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+              style: { fontSize: 15 },
+            }}
           />
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            fullWidth
-            disabled={loading}
-            sx={{ mt: 2 }}
-          >
-            {loading ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              "Sign in"
-            )}
-          </Button>
         </div>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          disabled={loading}
+          sx={{
+            textTransform: "none",
+            backgroundColor: "#007bff",
+            color: "#fff",
+            m: 0,
+          }}
+        >
+          {loading ? <CircularProgress size={24} color="inherit" /> : "Sign in"}
+        </Button>
+        <div className={styles.divider}>OR</div>
+        <Button
+          type="button"
+          onClick={handleGoogleSignIn}
+          variant="contained"
+          fullWidth
+          disabled={loading}
+          startIcon={<GoogleIcon />}
+          sx={{
+            textTransform: "none",
+            backgroundColor: "#007bff",
+            color: "#fff",
+            m: 0,
+          }}
+        >
+          Continue with Google
+        </Button>
       </form>
-      <div className={styles.divider}>
-        <Typography variant="body2" color="textSecondary">
-          or
-        </Typography>
-      </div>
-      <Button
-        type="button"
-        variant="outlined"
-        fullWidth
-        startIcon={<GoogleIcon />}
-        onClick={handleGoogleSignIn}
-        disabled={loading}
-        sx={{ textTransform: "none" }}
-      >
-        Sign in with Google
-      </Button>
     </div>
   );
 };

@@ -17,13 +17,15 @@ const Auth = () => {
       <Paper
         elevation={3}
         className={styles.authContainer}
-        sx={{ background: "#e9edc9" }}
+        sx={{ background: "#edede9" }}
       >
         <div className={styles.header}>
-          <Typography variant="h4" component="h1" gutterBottom>
+          <Typography
+            sx={{ fontSize: "32px", fontWeight: "600", color: "#003049" }}
+          >
             Welcome to FinanceTrack
           </Typography>
-          <Typography variant="subtitle1" color="textSecondary">
+          <Typography color="textPrimary">
             Manage your personal finances with ease
           </Typography>
         </div>
