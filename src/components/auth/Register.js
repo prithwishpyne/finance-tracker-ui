@@ -55,6 +55,8 @@ const Register = ({ setIsAuthenticated }) => {
         name: formData.name,
       });
 
+      console.log(data);
+
       // Show success message and navigate to auth page for login
       alert("Registration successful! Please login.");
       navigate("/auth");

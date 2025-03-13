@@ -81,6 +81,7 @@ const Login = ({ setIsAuthenticated }) => {
           redirectTo: `${window.location.origin}/dashboard`,
         },
       });
+      console.log(data);
 
       if (error) throw error;
 

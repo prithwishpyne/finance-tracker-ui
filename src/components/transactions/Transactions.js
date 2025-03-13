@@ -5,36 +5,12 @@ import { Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import axiosInstance from "../../utils/axiosConfig";
 
-const TRANSACTION_TYPES = {
-  INCOME: "income",
-  EXPENSE: "expense",
-};
-
-const CATEGORIES = {
-  [TRANSACTION_TYPES.INCOME]: [
-    "Salary",
-    "Bonus",
-    "Rental",
-    "Freelance",
-    "Investment",
-    "Other",
-  ],
-  [TRANSACTION_TYPES.EXPENSE]: [
-    "Rent",
-    "Food",
-    "Utilities",
-    "Transport",
-    "Entertainment",
-    "Healthcare",
-    "Shopping",
-    "Other",
-  ],
-};
-
 const Transactions = ({ onTransactionUpdate }) => {
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  console.log(isLoading);
   const [error, setError] = useState("");
+  console.log(error);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchTransactions = async () => {
@@ -54,7 +30,7 @@ const Transactions = ({ onTransactionUpdate }) => {
 
   useEffect(() => {
     fetchTransactions();
-  }, []);
+  });
 
   const handleDelete = async (id) => {
     try {
