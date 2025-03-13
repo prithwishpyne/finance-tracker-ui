@@ -1,0 +1,93 @@
+.dashboard {
+  padding: 0 2rem;
+}
+
+.topContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* background-color: red; */
+}
+
+.summaryCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+  position: relative;
+}
+
+.card h3 {
+  margin: 0;
+  color: var(--text-color);
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.amount {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.netWorth {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #28a745;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid rgba(40, 167, 69, 0.3);
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.charts {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.chartContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.chart {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+}
+
+.chartContainer h3 {
+  margin: 0;
+  color: var(--text-color);
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.placeholder {
+  background-color: #ffffff;
+  border: 2px dashed var(--border-color);
+  border-radius: 4px;
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-color);
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
