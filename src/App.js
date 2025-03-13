@@ -6,6 +6,7 @@ import styles from "./App.module.css";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ProfileModal from "./components/profile/ProfileModal";
+import * as config from "./utils/config.js";
 
 const AppContent = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -32,16 +33,19 @@ const AppContent = () => {
         if (session?.access_token) {
           // If we have a session, sync with our backend
           const user = session.user;
-          const response = await fetch("http://localhost:8000/oauth/google", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email: user.email,
-              name: user.user_metadata?.full_name || "",
-            }),
-          });
+          const response = await fetch(
+            `http://${config.URL}:${config.PORT}/oauth/google`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email: user.email,
+                name: user.user_metadata?.full_name || "",
+              }),
+            }
+          );
 
           if (!response.ok) {
             throw new Error("Failed to sync user data");

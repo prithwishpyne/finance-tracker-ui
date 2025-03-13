@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Google as GoogleIcon } from "@mui/icons-material";
+import axiosInstance from "../../utils/axiosConfig";
 
 const Login = ({ setIsAuthenticated }) => {
   const navigate = useNavigate();
@@ -38,20 +39,24 @@ const Login = ({ setIsAuthenticated }) => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
+      const response = await axiosInstance.post(
+        "/login",
+        {
           username: formData.username,
           password: formData.password,
-        }),
-      });
+        },
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
 
-      const data = await response.json();
+      console.log(response);
 
-      if (!response.ok) {
+      const data = response.data;
+
+      if (response.status !== 200 || !data.access_token) {
         throw new Error(data.detail || "Login failed");
       }
 
@@ -86,20 +91,12 @@ const Login = ({ setIsAuthenticated }) => {
 
       if (user) {
         // Send user data to our backend
-        const response = await fetch("http://localhost:8000/oauth/google", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: user.email,
-            name: user.user_metadata?.full_name || "",
-          }),
+        const response = await axiosInstance.post("/oauth/google", {
+          email: user.email,
+          name: user.user_metadata?.full_name || "",
         });
 
-        if (!response.ok) throw new Error("Failed to sync user data");
-
-        const tokenData = await response.json();
+        const tokenData = response.data;
         localStorage.setItem("token", tokenData.access_token);
         setIsAuthenticated(true);
         navigate("/dashboard");
